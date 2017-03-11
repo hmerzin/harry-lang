@@ -4,7 +4,8 @@
   "description": "",
   "main": "execute.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "./node_modules/.bin/babel  parser.js --out-file parser-compiled.js -w && ./node_modules/.bin/babel execute.js -out-file execute-compiled.js -w"
   },
   "author": "",
   "license": "ISC",
