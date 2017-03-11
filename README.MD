@@ -1,0 +1,1 @@
+to transpile: `./node_modules/.bin/babel  parser.js --out-file parser-compiled.js -w && ./node_modules/.bin/babel execute.js -out-file execute-compiled.js -w`
