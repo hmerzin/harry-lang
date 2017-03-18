@@ -1,6 +1,0 @@
-let harry = "harry"
-let hugo = "hugo"
-
-func dddd() {
-    let x = "dddd"
-}

@@ -7,10 +7,12 @@ export default function parse(fileName, callback) {
     });
 }
 
+/*
 parse('test.hl', (ast, script) => {
     console.log(`${script}\n-----------------------------------------------------------\n`);
     console.log(ast);
 });
+*/
 
 class Declaration {
     constructor(name, value) {
