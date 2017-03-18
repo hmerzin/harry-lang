@@ -1,7 +1,5 @@
 import fs from 'fs';
 
-let ast = [];
-
 export default function parse(fileName, callback) {
     let tokenized = [];
     fs.readFile(fileName, 'utf-8', (err, script) => {
@@ -43,6 +41,7 @@ class Function {
 }
 
 function tokenize(script) {
+    let ast = [];
     const lines = script.split('\n');
     lines.forEach((line, index) => {
         if(line.split(' ')[0] == 'let') {
@@ -55,7 +54,7 @@ function tokenize(script) {
                 funcLines.push(lines[counter]);
                 counter ++;
             }
-            declareFunc(name, funcLines);
+            ast.push(declareFunc(name, funcLines));
         }
     });
     //console.log(ast);
@@ -88,5 +87,5 @@ function declareFunc(name, lines) {
     //console.log(lines);
     func.lines = parsedLines;
     func.value = null;
-    ast.push(func);
+    return func;
 }

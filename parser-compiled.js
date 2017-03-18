@@ -13,8 +13,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var ast = [];
-
 function parse(fileName, callback) {
     var tokenized = [];
     _fs2.default.readFile(fileName, 'utf-8', function (err, script) {
@@ -56,6 +54,7 @@ var Function = function Function(name) {
 };
 
 function tokenize(script) {
+    var ast = [];
     var lines = script.split('\n');
     lines.forEach(function (line, index) {
         if (line.split(' ')[0] == 'let') {
@@ -68,7 +67,7 @@ function tokenize(script) {
                 funcLines.push(lines[counter]);
                 counter++;
             }
-            declareFunc(name, funcLines);
+            ast.push(declareFunc(name, funcLines));
         }
     });
     //console.log(ast);
@@ -101,5 +100,5 @@ function declareFunc(name, lines) {
     //console.log(lines);
     func.lines = parsedLines;
     func.value = null;
-    ast.push(func);
+    return func;
 }
