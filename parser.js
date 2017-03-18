@@ -2,9 +2,16 @@ import fs from 'fs';
 
 let ast = [];
 
-fs.readFile('./test.hl', 'utf-8', (err, script) => {
-    console.log(script);
-    tokenize(script);
+export default function parse(fileName, callback) {
+    let tokenized = [];
+    fs.readFile(fileName, 'utf-8', (err, script) => {
+        callback(tokenize(script), script);
+    });
+}
+
+parse('test.hl', (ast, script) => {
+    console.log(`${script}\n-----------------------------------------------------------\n`);
+    console.log(ast);
 });
 
 class Declaration {
@@ -28,30 +35,31 @@ class FunctionLine {
 }
 
 class Function {
-    constructor(name, lines) {
+    constructor(name) {
         this.name = name;
-        this.lines = lines;
+        //this.lines = lines;
+        //this.value = value;
     }
 }
 
 function tokenize(script) {
     const lines = script.split('\n');
-    lines.forEach(line => {
-        if(line.includes('let')) {
+    lines.forEach((line, index) => {
+        if(line.split(' ')[0] == 'let') {
             ast.push(declare(line));
-        } else if(line.includes('func')) {
+        } else if(line.split(' ')[0] == 'func') {
             let funcLines = [];
-            let lastIndex = lines.indexOf(line);
-            let counter = lastIndex ++;
+            let counter = index ++;
             let name = line.split(' ')[1].split('()')[0];
-            while(!line.includes('}')) {
+            while(!lines[counter].includes('}')) {
                 funcLines.push(lines[counter]);
                 counter ++;
             }
-            declareFunc(name, lines);
+            declareFunc(name, funcLines);
         }
     });
-    console.log(ast);
+    //console.log(ast);
+    return ast;
 }
 
 function declare(line) {
@@ -61,12 +69,24 @@ function declare(line) {
     return (new Declaration(name, value));
 }
 
+function callFunction(name) {
+    return new CallFunc(name);
+}
+
 function declareFunc(name, lines) {
+    let func = new Function(name);
+    let parsedLines = [];
     lines.forEach(line => {
-        if(line.contains('let')) {
-            declare(line);
-        } else if (line.contains('()')) {
-            
+        if(line.split(' ')[4] == 'let') {
+            parsedLines.push(declare(line));
+        } else if (line.split(' ')[0].includes('()')) {
+            parsedLines.push(callFunction(line.split('()')[0]));
+        } else if(line.split(' ')[0].includes('return')) {
+            func.value = line.split(' ')[1];
         }
-    })
+    });
+    //console.log(lines);
+    func.lines = parsedLines;
+    func.value = null;
+    ast.push(func);
 }

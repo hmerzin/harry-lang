@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = parse;
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -10,9 +15,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var ast = [];
 
-_fs2.default.readFile('./test.hl', 'utf-8', function (err, script) {
-    console.log(script);
-    tokenize(script);
+function parse(fileName, callback) {
+    var tokenized = [];
+    _fs2.default.readFile(fileName, 'utf-8', function (err, script) {
+        callback(tokenize(script), script);
+    });
+}
+
+parse('test.hl', function (ast, script) {
+    console.log(script + '\n-----------------------------------------------------------\n');
+    console.log(ast);
 });
 
 var Declaration = function Declaration(name, value) {
@@ -35,31 +47,32 @@ var FunctionLine = function FunctionLine(type, value) {
     this.value = value;
 };
 
-var Function = function Function(name, lines) {
+var Function = function Function(name) {
     _classCallCheck(this, Function);
 
     this.name = name;
-    this.lines = lines;
+    //this.lines = lines;
+    //this.value = value;
 };
 
 function tokenize(script) {
     var lines = script.split('\n');
-    lines.forEach(function (line) {
-        if (line.includes('let')) {
+    lines.forEach(function (line, index) {
+        if (line.split(' ')[0] == 'let') {
             ast.push(declare(line));
-        } else if (line.includes('func')) {
+        } else if (line.split(' ')[0] == 'func') {
             var funcLines = [];
-            var lastIndex = lines.indexOf(line);
-            var counter = lastIndex++;
+            var counter = index++;
             var name = line.split(' ')[1].split('()')[0];
-            while (!line.includes('}')) {
+            while (!lines[counter].includes('}')) {
                 funcLines.push(lines[counter]);
                 counter++;
             }
-            declareFunc(name, lines);
+            declareFunc(name, funcLines);
         }
     });
-    console.log(ast);
+    //console.log(ast);
+    return ast;
 }
 
 function declare(line) {
@@ -69,10 +82,24 @@ function declare(line) {
     return new Declaration(name, value);
 }
 
+function callFunction(name) {
+    return new CallFunc(name);
+}
+
 function declareFunc(name, lines) {
+    var func = new Function(name);
+    var parsedLines = [];
     lines.forEach(function (line) {
-        if (line.contains('let')) {
-            declare(line);
-        } else if (line.contains('()')) {}
+        if (line.split(' ')[4] == 'let') {
+            parsedLines.push(declare(line));
+        } else if (line.split(' ')[0].includes('()')) {
+            parsedLines.push(callFunction(line.split('()')[0]));
+        } else if (line.split(' ')[0].includes('return')) {
+            func.value = line.split(' ')[1];
+        }
     });
+    //console.log(lines);
+    func.lines = parsedLines;
+    func.value = null;
+    ast.push(func);
 }
