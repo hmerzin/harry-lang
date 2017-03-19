@@ -1,7 +1,7 @@
-//invoke
-import parse from './parser.js';
+// invoke
+import parse from './parser';
 
 parse('test.hl', (ast, script) => {
-    console.log(`${script}\n-----------------------------------------------------------\n`);
-    console.log(ast);
+  console.log(`${script}\n\n-----------------------------------------------------------\n`);
+  console.log(ast);
 });
