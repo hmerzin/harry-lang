@@ -5,7 +5,7 @@
   "main": "execute.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel  src/parser.js --out-file build/parser.js -w && ./node_modules/.bin/babel src/execute.js -out-file build/execute.js -w"
+    "build": "./node_modules/.bin/babel src/parser.js --out-file build/parser.js -w & ./node_modules/.bin/babel src/execute.js --out-file build/execute.js -w"
   },
   "author": "",
   "license": "ISC",
